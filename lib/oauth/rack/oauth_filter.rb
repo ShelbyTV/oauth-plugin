@@ -3,7 +3,7 @@ require "rack/request"
 require "oauth"
 require "oauth/request_proxy/rack_request"
 
-module OAuth
+module OAuthPlugin
   module Rack
     
     # An OAuth 1.0a filter to be used together with the oauth-plugin for rails.T
@@ -21,12 +21,12 @@ module OAuth
         @app = app
       end
       
-      def call(env)        
+      def call(env)
         request = ::Rack::Request.new(env)
         env["oauth_plugin"]=true
         strategies = []
         if token_string = oauth2_token(request)
-          token = Oauth2Token.find_by_token(token_string) if token_string
+          token = Oauth2Token.find(:first,:conditions=>{:token=> token_string }) if token_string
           if token
             env["oauth.token"] = token
             env["oauth.version"] = 2
@@ -35,7 +35,7 @@ module OAuth
           end
 
         elsif oauth1_verify(request) do |request_proxy|
-            client_application = ClientApplication.find_by_key(request_proxy.consumer_key)
+            client_application = ClientApplication.first(conditions: {:key => request_proxy.consumer_key})
             env["oauth.client_application_candidate"] = client_application
             # Store this temporarily in client_application object for use in request token generation
             client_application.token_callback_url=request_proxy.oauth_callback if request_proxy.oauth_callback

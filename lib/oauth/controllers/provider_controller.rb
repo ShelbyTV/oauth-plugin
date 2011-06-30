@@ -50,7 +50,7 @@ module OAuth
 
       def authorize
         if params[:oauth_token]
-          @token = ::RequestToken.find_by_token params[:oauth_token]
+          @token = ::RequestToken.where(:token => params[:oauth_token]).first
           oauth1_authorize
         elsif ["code","token"].include?(params[:response_type]) # pick flow
           send "oauth2_authorize_#{params[:response_type]}"
@@ -58,7 +58,7 @@ module OAuth
       end
 
       def revoke
-        @token = current_user.tokens.find_by_token params[:token]
+        @token = current_user.tokens.where(:token => params[:token])
         if @token
           @token.invalidate!
           flash[:notice] = "You've revoked the token for #{@token.client_application.name}"
