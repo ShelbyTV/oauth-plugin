@@ -4,7 +4,7 @@ module OAuth
     module ProviderController
       def self.included(controller)
         controller.class_eval do
-          before_filter :login_required, :only => [:authorize,:revoke]
+          before_filter :login_required, :only => [:revoke]
           oauthenticate :only => [:test_request]
           oauthenticate :strategies => :token, :interactive => false, :only => [:invalidate,:capabilities]
           oauthenticate :strategies => :two_legged, :interactive => false, :only => [:request_token]
@@ -50,8 +50,15 @@ module OAuth
 
       def authorize
         if params[:oauth_token]
-          @token = ::RequestToken.where(:token => params[:oauth_token]).first
-          oauth1_authorize
+          if current_user  # If user is logged in check if there is a token stored in the session, delete it if there is
+            @token = ::RequestToken.where(:token => params[:oauth_token]).first
+            session[:oauth_token] = nil if session[:token]
+            oauth1_authorize
+          else  # if user is not logged in, store the oauth token and redirect to login page
+            session[:oauth_token] = params[:oauth_token]
+            flash.now[:notice] = "You must be logged into Shelby first..."
+            redirect_to root_path
+          end
         elsif ["code","token"].include?(params[:response_type]) # pick flow
           send "oauth2_authorize_#{params[:response_type]}"
         end
