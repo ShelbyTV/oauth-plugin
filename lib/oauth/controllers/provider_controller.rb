@@ -52,11 +52,11 @@ module OAuth
         if params[:oauth_token]
           if current_user  # If user is logged in check if there is a token stored in the session, delete it if there is
             @token = ::RequestToken.where(:token => params[:oauth_token]).first
-            session[:oauth_token] = nil if session[:token]
+            session[:oauth_token] = nil if session[:oauth_token]
             oauth1_authorize
           else  # if user is not logged in, store the oauth token and redirect to login page
             session[:oauth_token] = params[:oauth_token]
-            flash.now[:notice] = "You must be logged into Shelby first..."
+            flash[:notice] = "You must be logged into Shelby first..."
             redirect_to root_path
           end
         elsif ["code","token"].include?(params[:response_type]) # pick flow
