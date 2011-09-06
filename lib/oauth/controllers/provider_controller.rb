@@ -57,7 +57,7 @@ module OAuth
           else  # if user is not logged in, store the oauth token and redirect to login page
             session[:oauth_token] = params[:oauth_token]
             flash[:notice] = "You must be logged into Shelby first..."
-            redirect_to root_path
+            redirect_to login_from_api_url
           end
         elsif ["code","token"].include?(params[:response_type]) # pick flow
           send "oauth2_authorize_#{params[:response_type]}"
