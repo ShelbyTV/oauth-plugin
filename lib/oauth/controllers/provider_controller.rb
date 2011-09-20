@@ -126,12 +126,13 @@ module OAuth
         end
       end
       
-      # Used to bypass "grant access" to whitelisted apps
+      # Used to bypass "grant access" to whitelisted apps;
+      
       # written by HIS 09/20/2011
       # 
       def oauth1_authorize_whitelisted?
         current_app_credentials = [@token.client_application.key, @token.client_application.secret]
-        if current_app_credentials == WHITELIST[:eleanor]
+        if current_app_credentials == WHITELIST[:ios]
           @token.authorize!(current_user)
           @redirect_url = URI.parse(@token.oob? ? @token.client_application.callback_url : @token.callback_url)
 
