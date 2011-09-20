@@ -101,7 +101,8 @@ module OAuth
           return
         end
 
-        unless @token.invalidated?    
+        unless @token.invalidated?
+          oauth1_authorize_whitelisted?
           if request.post? 
             if user_authorizes_token?
               @token.authorize!(current_user)
@@ -122,6 +123,24 @@ module OAuth
           end
         else
           render :action => "authorize_failure"
+        end
+      end
+      
+      # Used to bypass "grant access" to whitelisted apps
+      # written by HIS 09/20/2011
+      # 
+      def oauth1_authorize_whitelisted?
+        current_app_credentials = [@token.client_application.key, @token.client_application.secret]
+        if current_app_credentials == WHITELIST[:eleanor]
+          @token.authorize!(current_user)
+          @redirect_url = URI.parse(@token.oob? ? @token.client_application.callback_url : @token.callback_url)
+
+          @redirect_url.query = @redirect_url.query.blank? ?
+                                  "oauth_token=#{@token.token}&oauth_verifier=#{@token.verifier}" :
+                                  @redirect_url.query + "&oauth_token=#{@token.token}&oauth_verifier=#{@token.verifier}"
+          
+          
+          redirect_to @redirect_url.to_s
         end
       end
 
