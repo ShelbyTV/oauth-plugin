@@ -139,7 +139,6 @@ module OAuth
                                   "oauth_token=#{@token.token}&oauth_verifier=#{@token.verifier}" :
                                   @redirect_url.query + "&oauth_token=#{@token.token}&oauth_verifier=#{@token.verifier}"
           
-          
           redirect_to @redirect_url.to_s
         end
       end
