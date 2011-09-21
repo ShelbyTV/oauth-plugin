@@ -102,7 +102,7 @@ module OAuth
         end
 
         unless @token.invalidated?
-          oauth1_authorize_whitelisted?
+          #oauth1_authorize_whitelisted?
           if request.post? 
             if user_authorizes_token?
               @token.authorize!(current_user)
