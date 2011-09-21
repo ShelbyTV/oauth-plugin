@@ -131,8 +131,7 @@ module OAuth
       # written by HIS 09/20/2011
       # 
       def oauth1_authorize_whitelisted?
-        current_app_credentials = [@token.client_application.key, @token.client_application.secret]
-        if current_app_credentials == WHITELIST[:ios]
+        if @token.client_application.whitelisted
           @token.authorize!(current_user)
           @redirect_url = URI.parse(@token.oob? ? @token.client_application.callback_url : @token.callback_url)
 
