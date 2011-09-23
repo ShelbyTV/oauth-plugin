@@ -55,9 +55,14 @@ module OAuth
             session[:oauth_token] = nil if session[:oauth_token]
             oauth1_authorize
           else  # if user is not logged in, store the oauth token and redirect to login page
-            session[:oauth_token] = params[:oauth_token]
-            flash[:notice] = "You must be logged into Shelby first..."
-            redirect_to login_from_api_url
+            if provider = params[:provider]
+              redirect_to "http://dev.shelby.tv/auth/twitter" if provider == "twitter"
+              redirect_to "http://dev.shelby.tv/auth/facebook" if provider == "facebook"
+            else
+              session[:oauth_token] = params[:oauth_token]
+              flash[:notice] = "You must be logged into Shelby first..."
+              redirect_to login_from_api_url
+            end
           end
         elsif ["code","token"].include?(params[:response_type]) # pick flow
           send "oauth2_authorize_#{params[:response_type]}"
