@@ -56,6 +56,7 @@ module OAuth
             oauth1_authorize
           else  # if user is not logged in, store the oauth token and redirect to login page
             if provider = params[:provider]
+              session[:oauth_token] = oauth_token_param
               redirect_to "http://dev.shelby.tv/auth/twitter" if provider == "twitter"
               redirect_to "http://dev.shelby.tv/auth/facebook" if provider == "facebook"
             else
