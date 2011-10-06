@@ -67,6 +67,9 @@ module OAuth
           end
         elsif ["code","token"].include?(params[:response_type]) # pick flow
           send "oauth2_authorize_#{params[:response_type]}"
+        else
+          flash[:notice] = "Something went wrong, go back to that App and try again."
+          redirect_to login_from_api_url
         end
       end
 
@@ -144,7 +147,8 @@ module OAuth
           @redirect_url.query = @redirect_url.query.blank? ?
                                   "oauth_token=#{@token.token}&oauth_verifier=#{@token.verifier}" :
                                   @redirect_url.query + "&oauth_token=#{@token.token}&oauth_verifier=#{@token.verifier}"
-          
+
+
           redirect_to @redirect_url.to_s
         end
       end
