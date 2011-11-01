@@ -32,7 +32,7 @@ module OAuth
       end
 
       def token
-        @client_application = ClientApplication.find_by_key params[:client_id]
+        @client_application = ClientApplication.find params[:client_id]
         if @client_application.secret != params[:client_secret]
           oauth2_error "invalid_client"
           return
@@ -51,7 +51,7 @@ module OAuth
       def authorize
         if oauth_token_param = params[:oauth_token]
           if current_user  # If user is logged in check if there is a token stored in the session, delete it if there is
-            @token = ::RequestToken.where(:token => oauth_token_param).first
+            @token = ::RequestToken.find(:token => oauth_token_param)
             session[:oauth_token] = nil if session[:oauth_token]
             oauth1_authorize
           else  # if user is not logged in, store the oauth token and redirect to login page
@@ -74,7 +74,7 @@ module OAuth
       end
 
       def revoke
-        @token = current_user.tokens.where(:token => params[:token])
+        @token = current_user.valid_tokens.find(:token => params[:token])
         if @token
           @token.invalidate!
           flash[:notice] = "You've revoked the token for #{@token.client_application.name}"
