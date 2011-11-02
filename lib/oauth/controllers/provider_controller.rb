@@ -3,6 +3,7 @@ module OAuth
    
     module ProviderController
       def self.included(controller)
+        Rails.logger.info("++++==== ProviderController self.included called")
         controller.class_eval do
           before_filter :login_required, :only => [:revoke]
           oauthenticate :only => [:test_request]
