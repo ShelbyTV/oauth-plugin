@@ -3,7 +3,6 @@ module OAuth
    
     module ProviderController
       def self.included(controller)
-        Rails.logger.info("++++==== ProviderController self.included called")
         controller.class_eval do
           before_filter :login_required, :only => [:revoke]
           oauthenticate :only => [:test_request]
@@ -58,8 +57,8 @@ module OAuth
           else  # if user is not logged in, store the oauth token and redirect to login page
             if provider = params[:provider]
               session[:oauth_token] = oauth_token_param
-              redirect_to "http://dev.shelby.tv/auth/twitter" if provider == "twitter"
-              redirect_to "http://dev.shelby.tv/auth/facebook" if provider == "facebook"
+              redirect_to "http://#{APP_CONFIG[:domain]}/auth/twitter" if provider == "twitter"
+              redirect_to "http://#{APP_CONFIG[:domain]}/auth/facebook" if provider == "facebook"
             else
               session[:oauth_token] = params[:oauth_token]
               flash[:notice] = "You must be logged into Shelby first..."
