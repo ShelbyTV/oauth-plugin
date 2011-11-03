@@ -32,7 +32,7 @@ module OAuth
       end
 
       def token
-        @client_application = ClientApplication.find_by_key params[:client_id]
+        @client_application = ClientApplication.find params[:client_id]
         if @client_application.secret != params[:client_secret]
           oauth2_error "invalid_client"
           return
@@ -74,7 +74,7 @@ module OAuth
       end
 
       def revoke
-        @token = current_user.tokens.where(:token => params[:token])
+        @token = current_user.valid_tokens.where(:token => params[:token]).first
         if @token
           @token.invalidate!
           flash[:notice] = "You've revoked the token for #{@token.client_application.name}"

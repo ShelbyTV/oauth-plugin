@@ -122,12 +122,14 @@ module OAuth
       end
       
       def invalid_oauth_response(code=401,message="Invalid OAuth Request")
+        Rails.logger.info "<<<<< invalid_oauth_response >>>>>>"
         render :text => message, :status => code
         false
       end
       
       # override this in your controller
       def access_denied
+        Rails.logger.info "<<<<< access_denied >>>>>>"
         head 401
       end
 
