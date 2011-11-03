@@ -51,7 +51,7 @@ module OAuth
       def authorize
         if oauth_token_param = params[:oauth_token]
           if current_user  # If user is logged in check if there is a token stored in the session, delete it if there is
-            @token = ::RequestToken.find(:token => oauth_token_param)
+            @token = ::RequestToken.where(:token => oauth_token_param).first
             session[:oauth_token] = nil if session[:oauth_token]
             oauth1_authorize
           else  # if user is not logged in, store the oauth token and redirect to login page
