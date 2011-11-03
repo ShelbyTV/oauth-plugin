@@ -11,9 +11,11 @@ module OAuth
       
       module ClassMethods
         def oauthenticate(options={})
+          Rails.logger.info("----==== oauthenticate called")
           filter_options = {}
           filter_options[:only]   = options.delete(:only) if options[:only]
           filter_options[:except] = options.delete(:except) if options[:except]
+          Rails.logger.info("----==== oauthenticate : #{filter_options}")
           before_filter Filter.new(options), filter_options
         end
       end
@@ -25,6 +27,7 @@ module OAuth
               :strategies => [:token,:two_legged]
             }.merge(options)
           @strategies = Array(@options[:strategies])
+          Rails.logger.info("----==== Filter strategies : #{@strategies}")
           @strategies << :interactive if @options[:interactive]
         end
         
